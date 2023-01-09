@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack"
   },
-  "author": "Mark Lavercombe",
+  "author": "Matt Sweeney",
   "license": "ISC",
   "devDependencies": {
     "webpack": "^5.74.0",
