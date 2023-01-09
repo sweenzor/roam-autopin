@@ -37,7 +37,6 @@ const initializeRoamJSSidebarFeatures = (extensionAPI) => {
           .getWindows()
           .find((w) => w.order === order);
         if (true) {
-          console.log('test');
           if (sidebarWindow.type == "block") {
             window.roamAlphaAPI.ui.rightSidebar.pinWindow({
               window: {
