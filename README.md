@@ -1,5 +1,3 @@
-**Auto-pin for Roam Research**
+Any block or page "Opened in sidebar" will be automatically [pinned](https://x.com/RoamResearch/status/1804148729617785076).
 
-Any block or page added to the Right Sidebar will be automatically pinned.
-
-Based on [Workspaces](https://github.com/mlava/workspaces) by [Mark Lavercombe](https://github.com/mlava)
+Based on the [Roam Research](https://roamresearch.com/) extension **[Workspaces](https://github.com/mlava/workspaces)** by [Mark Lavercombe](https://github.com/mlava) 
