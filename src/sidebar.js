@@ -1,16 +1,16 @@
 const createHTMLObserver = ({ callback, tag, className }) => {
-  const getChildren = (d) =>
-    Array.from(d.getElementsByClassName(className)).filter(
-      (d) => d.nodeName === tag
+  const getChildren = (el) =>
+    Array.from(el.getElementsByClassName(className)).filter(
+      (child) => child.nodeName === tag
     );
   getChildren(document).forEach(callback);
 
-  const isNode = (d) =>
-    d.nodeName === tag && Array.from(d.classList).includes(className);
+  const isNode = (el) =>
+    el.nodeName === tag && el.classList.contains(className);
   const getNodes = (nodes) =>
     Array.from(nodes)
-      .filter((d) => isNode(d) || d.hasChildNodes())
-      .flatMap((d) => (isNode(d) ? [d] : getChildren(d)));
+      .filter((el) => isNode(el) || el.hasChildNodes())
+      .flatMap((el) => (isNode(el) ? [el] : getChildren(el)));
 
   const htmlObserver = new MutationObserver((ms) => {
     ms.flatMap((m) => getNodes(m.addedNodes)).forEach(callback);
@@ -26,35 +26,19 @@ const initializeRoamJSSidebarFeatures = (extensionAPI) => {
     tag: "DIV",
     className: "rm-sidebar-window",
     callback: (d) => {
-      if (
-        (true &&
-          /^Outline of:/.test(d.firstElementChild.innerText)) || (true)
-      ) {
-        const order = Array.from(
-          d.parentElement.parentElement.children
-        ).findIndex((c) => c === d.parentElement);
-        const sidebarWindow = window.roamAlphaAPI.ui.rightSidebar
-          .getWindows()
-          .find((w) => w.order === order);
-        if (!sidebarWindow || !sidebarWindow.type) return;
-        if (true) {
-          if (sidebarWindow.type == "block") {
-            window.roamAlphaAPI.ui.rightSidebar.pinWindow({
-              window: {
-                type: sidebarWindow.type,
-                "block-uid": sidebarWindow["block-uid"],
-              }
-            });
-          } else {
-            window.roamAlphaAPI.ui.rightSidebar.pinWindow({
-              window: {
-                type: sidebarWindow.type,
-                "block-uid": sidebarWindow["page-uid"],
-              }
-            });
-          }
-        }
-      }
+      const order = Array.from(
+        d.parentElement.parentElement.children
+      ).findIndex((c) => c === d.parentElement);
+      const sidebarWindow = window.roamAlphaAPI.ui.rightSidebar
+        .getWindows()
+        .find((w) => w.order === order);
+      if (!sidebarWindow || !sidebarWindow.type) return;
+      const uid = sidebarWindow.type === "block"
+        ? sidebarWindow["block-uid"]
+        : sidebarWindow["page-uid"];
+      window.roamAlphaAPI.ui.rightSidebar.pinWindow({
+        window: { type: sidebarWindow.type, "block-uid": uid }
+      });
     },
   });
   unloads.add(() => sidebarWindowObserver.disconnect());
