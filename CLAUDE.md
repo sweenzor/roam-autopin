@@ -23,6 +23,3 @@ npm run build    # webpack bundles src/index.js -> extension.js (ES module)
 - `window.roamAlphaAPI.ui.rightSidebar.getWindows()` — Lists current sidebar windows with order, type, and uid.
 - `window.roamAlphaAPI.ui.rightSidebar.pinWindow({ window: { type, "block-uid" } })` — Pins a sidebar window. Uses `block-uid` for blocks and `page-uid` for pages/outlines.
 
-## Known Issues
-
-- Missing null guard on `sidebarWindow` in sidebar.js callback — if the DOM mutation fires before `getWindows()` reflects the new window, it will crash. Upstream has fixed this.
