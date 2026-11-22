@@ -7,7 +7,7 @@
     "build": "webpack"
   },
   "author": "Matt Sweeney",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0"
