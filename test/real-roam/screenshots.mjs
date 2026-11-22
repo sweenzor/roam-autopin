@@ -167,10 +167,14 @@ async function main() {
 
   // 3. Roam quit and started again: pinned windows are the ones Roam keeps.
   if (!PUBLIC) {
-    await sleep(3000); // let Roam sync the pins
+    await sleep(10000); // let Roam save the pins
     await quitRoam('SIGTERM');
     await start();
-    await waitFor('the three pinned windows after a restart', async () => (await pinnedCount()) === 3, 30000);
+    await sleep(5000);
+    log('sidebar just after the restart', JSON.stringify(await windows()));
+    await evalIn(() => window.roamAlphaAPI.ui.rightSidebar.open()); // Roam starts with the sidebar closed
+    await waitFor('the three pinned windows after a restart', async () => (await pinnedCount()) === 3, 30000)
+      .catch(async (e) => { throw new Error(`${e.message}: ${JSON.stringify(await windows())}`); });
     await openPage('Lisbon trip');
     log('sidebar after restart', JSON.stringify(await windows()));
     await snap('after-restart', await windowBox());
