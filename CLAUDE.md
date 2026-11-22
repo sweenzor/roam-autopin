@@ -13,7 +13,7 @@ npm run build    # webpack bundles src/index.js -> extension.js (ES module)
 
 ## Releasing
 
-Version in `package.json` and `CHANGELOG.md` (semver). A release to Roam Depot is a PR on
+Version in `package.json` and `CHANGELOG.md`: semver 0.x.y, like the other extensions (the first Depot release counts as 0.1.0). A release to Roam Depot is a PR on
 Roam-Research/roam-depot that bumps `source_commit` in `extensions/sweenzor/autopin.json`.
 
 ## README screenshots
