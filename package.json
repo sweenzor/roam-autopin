@@ -1,13 +1,13 @@
 {
   "name": "autopin",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.2.0",
+  "description": "Roam Research extension that pins everything opened in the right sidebar",
   "main": "index.js",
   "scripts": {
     "build": "webpack"
   },
   "author": "Matt Sweeney",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "webpack": "^5.74.0",
     "webpack-cli": "^4.10.0"

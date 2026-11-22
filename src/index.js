@@ -1,10 +1,13 @@
-import initializeRoamJSSidebarFeatures from "./sidebar";
+import initializeAutopin from "./sidebar";
+
+let stop = null;
 
 export default {
-    onload: ({ extensionAPI }) => {
-        const unloadRoamJSSidebarFeatures = initializeRoamJSSidebarFeatures(extensionAPI);
-        return () => {
-            unloadRoamJSSidebarFeatures();
-        }
-    }
-}
+  onload: () => {
+    stop = initializeAutopin();
+  },
+  onunload: () => {
+    stop?.();
+    stop = null;
+  },
+};

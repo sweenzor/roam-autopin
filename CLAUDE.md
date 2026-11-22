@@ -11,15 +11,28 @@ npm install
 npm run build    # webpack bundles src/index.js -> extension.js (ES module)
 ```
 
+## Releasing
+
+Version in `package.json` and `CHANGELOG.md`: semver 0.x.y, like the other extensions (the first Depot release counts as 0.1.0). A release to Roam Depot is a PR on
+Roam-Research/roam-depot that bumps `source_commit` in `extensions/sweenzor/autopin.json`.
+
+## README screenshots
+
+`test/real-roam/screenshots.mjs` takes the README's pictures in Roam's real desktop app (Linux, Xvfb),
+signed in to the test graph. The Screenshots workflow runs it (needs the `ROAM_EMAIL` and `ROAM_PASSWORD`
+repository secrets), commits the pictures to `docs/images` and pins the README's image links to that
+commit. Run it before every release to Roam Depot. Every feature has a README section and a picture.
+Without credentials the script uses the public help graph, to try the script out only.
+
 ## Architecture
 
 - `src/index.js` — Extension entry point. Exports `onload`/`onunload` lifecycle hooks expected by Roam's extension system.
-- `src/sidebar.js` — Core logic. A `MutationObserver` watches the DOM for new `.rm-sidebar-window` DIV elements, then calls `roamAlphaAPI.ui.rightSidebar.pinWindow()` on each.
+- `src/sidebar.js` — Core logic. A `MutationObserver` watches the DOM for new `.rm-sidebar-window` DIV elements, then calls `roamAlphaAPI.ui.rightSidebar.pinWindow()` on each one that isn't pinned.
 - `webpack.config.js` — Bundles to `extension.js` at repo root as an ES module.
 - `extension.js` — Build output (gitignored).
 
 ## Key APIs
 
 - `window.roamAlphaAPI.ui.rightSidebar.getWindows()` — Lists current sidebar windows with order, type, and uid.
-- `window.roamAlphaAPI.ui.rightSidebar.pinWindow({ window: { type, "block-uid" } })` — Pins a sidebar window. Uses `block-uid` for blocks and `page-uid` for pages/outlines.
+- `window.roamAlphaAPI.ui.rightSidebar.pinWindow({ window: { type, "block-uid" } })` — Pins a sidebar window. `getWindows` reports `block-uid`, `page-uid` or `mentions-uid` depending on the kind; all are pinned with `block-uid`. A search is pinned with `search-query-str`.
 

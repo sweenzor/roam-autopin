@@ -1,0 +1,111 @@
+# Takes the README's screenshots in Roam's real desktop app (Linux build, under Xvfb), signed in to the
+# hosted test graph, commits them to docs/images on the branch it ran for, and points the README's image
+# links at that commit (Roam Depot shows the README, and needs links pinned to a commit). Run it before
+# every release to Roam Depot, so the pictures show the build being released: Actions -> Screenshots ->
+# Run workflow, on the release branch. See test/real-roam/screenshots.mjs. Needs the ROAM_EMAIL and
+# ROAM_PASSWORD repository secrets (the Roam test account).
+name: Screenshots
+
+# Run by hand only: Actions -> Screenshots -> Run workflow, on the release branch. A push by the workflow
+# gets no checks of its own, so make the pictures before the last commit of a release, not after it.
+on:
+  workflow_dispatch:
+
+# Pushes the pictures back to the branch.
+permissions:
+  contents: write
+
+# One run at a time: every run signs in to the same account and graph.
+concurrency:
+  group: real-roam
+  cancel-in-progress: false
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      ROAM_VERSION: 0.0.42
+      ROAM_DEB_SHA512: x9Ln56V7TlDO6zDcXK0AKDeAmz5LSX1oWpKbV6w7CUzbMc/LESJ7qLQs0Ap/nPpwPCf7jUypd0LS05SsJbD/HA==
+      OUT: ${{ github.workspace }}/docs/images
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: Check for the Roam test account secrets
+        id: creds
+        env:
+          HAS_EMAIL: ${{ secrets.ROAM_EMAIL != '' }}
+          HAS_PASSWORD: ${{ secrets.ROAM_PASSWORD != '' }}
+        run: |
+          if [ "$HAS_EMAIL" = true ] && [ "$HAS_PASSWORD" = true ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Skipped: add the ROAM_EMAIL and ROAM_PASSWORD repository secrets to run the extension in real Roam."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.creds.outputs.ok == 'true'
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: actions/setup-node@v4
+        if: steps.creds.outputs.ok == 'true'
+        with:
+          node-version: 22
+          
+
+      - name: Build the extension
+        if: steps.creds.outputs.ok == 'true'
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Cache the Roam installer
+        if: steps.creds.outputs.ok == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/roam-deb
+          key: roam-deb-${{ env.ROAM_VERSION }}
+
+      - name: Install Roam, Xvfb and Playwright
+        if: steps.creds.outputs.ok == 'true'
+        run: |
+          mkdir -p ~/roam-deb
+          deb=~/roam-deb/roam-research_${ROAM_VERSION}_amd64.deb
+          [ -f "$deb" ] || curl -fsSL -o "$deb" "https://roam-electron-deploy.s3.us-east-2.amazonaws.com/roam-research_${ROAM_VERSION}_amd64.deb"
+          echo "$(echo "$ROAM_DEB_SHA512" | base64 -d | od -An -v -tx1 | tr -d ' \n')  $deb" | sha512sum -c -
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq "$deb" xvfb
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/pw" playwright-core@1.63.0
+
+      - name: Take the screenshots in real Roam
+        id: shots
+        if: steps.creds.outputs.ok == 'true'
+        env:
+          ROAM_EMAIL: ${{ secrets.ROAM_EMAIL }}
+          ROAM_PASSWORD: ${{ secrets.ROAM_PASSWORD }}
+          ROAM_GRAPH: ${{ vars.ROAM_GRAPH || 'vault-spike-hosted' }}
+        run: |
+          Xvfb :99 -screen 0 1440x900x24 >/dev/null 2>&1 &
+          export DISPLAY=:99
+          NODE_PATH="$RUNNER_TEMP/pw/node_modules" node test/real-roam/screenshots.mjs
+
+      - name: Commit the screenshots
+        if: always() && steps.creds.outputs.ok == 'true'
+        env:
+          TAKEN: ${{ steps.shots.outcome == 'success' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/images
+          if git diff --cached --quiet; then
+            echo "No screenshots changed."
+            exit 0
+          fi
+          git commit -m "Update README screenshots"
+          if [ "$TAKEN" = true ]; then
+            sha=$(git rev-parse HEAD)
+            sed -i -E "s#(raw\.githubusercontent\.com/${GITHUB_REPOSITORY}/)[0-9a-f]{40}(/docs/images/)#\1${sha}\2#g" README.md
+            git diff --quiet README.md || git commit -m "Point the README at the new screenshots" README.md
+          fi
+          git push origin "HEAD:$BRANCH"
