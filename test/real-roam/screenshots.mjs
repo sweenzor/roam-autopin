@@ -7,7 +7,7 @@
 // Every picture shows the real extension at work: the windows are opened the way a shift-click opens
 // them, and the pins on them are the ones the extension set. It makes a few small pages about a trip to
 // have something to show, and empties the sidebar when done. It stops with an error if a window it
-// expects to be pinned isn't. See .github/workflows/screenshots.yml.
+// expects to be pinned isn't, so it also works as the extension's test in real Roam. See .github/workflows/screenshots.yml.
 //
 // Without ROAM_EMAIL and ROAM_PASSWORD it opens Roam's public help graph and loads the build straight
 // into the page. That is for trying the script out only: the help graph can't be written to and keeps
@@ -94,7 +94,7 @@ async function start() {
   await launchRoam();
   if (!PUBLIC) await signIn(EMAIL, PASSWORD);
   await openGraph(GRAPH);
-  if (PUBLIC) await evalIn(async (url) => { const m = await import(`${url}extension.js?${Date.now()}`); m.default.onload({ extensionAPI: {} }); }, EXT_URL);
+  if (PUBLIC) await evalIn(async (url) => { const m = await import(`${url}extension.js?${Date.now()}`); m.default.onload({ extensionAPI: {} }); window.__autopin = m.default; }, EXT_URL);
   cdp = await roam.page.context().newCDPSession(roam.page); // kept open: the override ends with it
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: WIDTH, height: HEIGHT, deviceScaleFactor: 2, mobile: false });
   await sleep(1000);
@@ -168,14 +168,16 @@ async function main() {
     await snap('after-restart', await windowBox());
   }
 
-  // 4. Which kinds of window get pinned: one of each, opened one after the other.
+  // 4. No picture, a check: one window of every kind, opened one after the other, and all five are pinned.
   await clearSidebar();
+  const kinds = ['search-query:train', 'graph:' + u['Lisbon trip'], 'mentions:' + u.Sintra, 'block:' + u.block, 'outline:' + u['Packing list']];
   await sb(`
-    for (const key of ['search-query:train', 'graph:' + arg['Lisbon trip'], 'mentions:' + arg.Sintra, 'block:' + arg.block, 'outline:' + arg['Packing list']]) {
+    for (const key of arg) {
       await sb.addWindow({ window: w(key) });
       await new Promise((r) => setTimeout(r, 1200));
-    }`, u);
-  await sleep(2500);
+    }`, kinds);
+  await waitFor('one pinned window of every kind', async () => (await pinnedCount()) === kinds.length, 15000)
+    .catch(async () => { throw new Error(`not every kind of window was pinned: ${JSON.stringify(await windows())}`); });
   log('one of each kind', JSON.stringify(await windows()));
 }
 

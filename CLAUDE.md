@@ -11,6 +11,11 @@ npm install
 npm run build    # webpack bundles src/index.js -> extension.js (ES module)
 ```
 
+## Releasing
+
+Version in `package.json` and `CHANGELOG.md` (semver). A release to Roam Depot is a PR on
+Roam-Research/roam-depot that bumps `source_commit` in `extensions/sweenzor/autopin.json`.
+
 ## README screenshots
 
 `test/real-roam/screenshots.mjs` takes the README's pictures in Roam's real desktop app (Linux, Xvfb),
@@ -22,12 +27,12 @@ Without credentials the script uses the public help graph, to try the script out
 ## Architecture
 
 - `src/index.js` — Extension entry point. Exports `onload`/`onunload` lifecycle hooks expected by Roam's extension system.
-- `src/sidebar.js` — Core logic. A `MutationObserver` watches the DOM for new `.rm-sidebar-window` DIV elements, then calls `roamAlphaAPI.ui.rightSidebar.pinWindow()` on each.
+- `src/sidebar.js` — Core logic. A `MutationObserver` watches the DOM for new `.rm-sidebar-window` DIV elements, then calls `roamAlphaAPI.ui.rightSidebar.pinWindow()` on each one that isn't pinned.
 - `webpack.config.js` — Bundles to `extension.js` at repo root as an ES module.
 - `extension.js` — Build output (gitignored).
 
 ## Key APIs
 
 - `window.roamAlphaAPI.ui.rightSidebar.getWindows()` — Lists current sidebar windows with order, type, and uid.
-- `window.roamAlphaAPI.ui.rightSidebar.pinWindow({ window: { type, "block-uid" } })` — Pins a sidebar window. Uses `block-uid` for blocks and `page-uid` for pages/outlines.
+- `window.roamAlphaAPI.ui.rightSidebar.pinWindow({ window: { type, "block-uid" } })` — Pins a sidebar window. `getWindows` reports `block-uid`, `page-uid` or `mentions-uid` depending on the kind; all are pinned with `block-uid`. A search is pinned with `search-query-str`.
 

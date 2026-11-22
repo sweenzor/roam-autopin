@@ -1,7 +1,7 @@
 {
   "name": "autopin",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.1.0",
+  "description": "Roam Research extension that pins everything opened in the right sidebar",
   "main": "index.js",
   "scripts": {
     "build": "webpack"

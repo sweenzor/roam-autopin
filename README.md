@@ -11,7 +11,7 @@ Everything you open in the right sidebar is pinned for you.
 </div>
 
 Roam keeps a sidebar window after you quit or reload only if you [pin](https://x.com/RoamResearch/status/1804148729617785076)
-it. Autopin pins every block and page the moment it's opened in the right sidebar, so you never have to
+it. Autopin pins every window the moment it's opened in the right sidebar, so you never have to
 click the pin yourself.
 
 Nothing is written to your graph and nothing is sent over the network. There are no settings.
@@ -38,7 +38,7 @@ other, and nobody clicked a pin.
 | Blocks (**Block Outline**) | Yes |
 | References (**References to:**) | Yes |
 | Graph views (**Graph of**) | Yes |
-| Searches (**Search**) | No. Pin these yourself. |
+| Searches (**Search**) | Yes |
 
 To take one window out of the sidebar, close it with its **×** as usual.
 
@@ -60,10 +60,13 @@ time you open the graph. The picture is Roam just after it was quit and opened a
 ## Limitations
 
 - Autopin can't leave a window unpinned. Unpin one and it stays unpinned only until it's opened again.
-- Search windows are not pinned.
 - It keeps the sidebar by pinning, which is a workaround.
   [Persistent Sidebar](https://github.com/sweenzor/roam-persistent-sidebar) restores the sidebar without
   pinning anything, and also keeps collapsed windows and the order.
+
+## Changes
+
+See the [changelog](CHANGELOG.md).
 
 ## Development
 
