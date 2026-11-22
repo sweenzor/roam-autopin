@@ -6,7 +6,7 @@
 
 Everything you open in the right sidebar is pinned for you.
 
-![Roam with three windows in the right sidebar, each with its pin on](https://raw.githubusercontent.com/sweenzor/roam-autopin/364722915f121990920cc601e784b0573c562daf/docs/images/autopin.png)
+![Roam with three windows in the right sidebar, each with its pin on](https://raw.githubusercontent.com/sweenzor/roam-autopin/275463766d3a92c736c531c417362ef82e2b104e/docs/images/autopin.png)
 
 </div>
 
@@ -26,7 +26,7 @@ already pinned stay pinned until you unpin them.
 
 ## Every window is pinned
 
-![One sidebar window up close, with the pin beside it turned on](https://raw.githubusercontent.com/sweenzor/roam-autopin/364722915f121990920cc601e784b0573c562daf/docs/images/pinned-window.png)
+![One sidebar window up close, with the pin beside it turned on](https://raw.githubusercontent.com/sweenzor/roam-autopin/275463766d3a92c736c531c417362ef82e2b104e/docs/images/pinned-window.png)
 
 The pin is the one Roam already has, beside each window in the sidebar. Autopin turns it on as the window
 appears. In the picture at the top of this page, the two pages and the block were opened one after the
@@ -52,7 +52,7 @@ sidebar API and calls Roam's own `pinWindow` on it. The result is the same as cl
 
 ## The sidebar comes back after a restart
 
-![Roam just after a restart, with the same three pinned windows in the right sidebar](https://raw.githubusercontent.com/sweenzor/roam-autopin/364722915f121990920cc601e784b0573c562daf/docs/images/after-restart.png)
+![Roam just after a restart, with the same three pinned windows in the right sidebar](https://raw.githubusercontent.com/sweenzor/roam-autopin/275463766d3a92c736c531c417362ef82e2b104e/docs/images/after-restart.png)
 
 Roam itself keeps pinned windows. Since Autopin pins everything, the sidebar you left is there the next
 time you open the graph. The picture is Roam just after it was quit and opened again.
