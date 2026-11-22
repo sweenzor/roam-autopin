@@ -31,10 +31,11 @@ const WIDTH = 1280, HEIGHT = 800;
 fs.mkdirSync(OUT, { recursive: true });
 for (const f of fs.readdirSync(OUT)) if (f.startsWith('debug-')) fs.rmSync(path.join(OUT, f)); // from an earlier run
 roam.logDir = fs.mkdtempSync(path.join(os.tmpdir(), 'real-roam-'));
-// Roam loads extension.js from a folder URL. Serve a folder with the build alone in it.
+// Roam loads the build from a folder URL. Serve a folder with only what Roam Depot would have in it.
+// Roam asks for all three files and loads nothing when README.md is missing.
 const DIST = path.join(roam.logDir, 'dist');
 fs.mkdirSync(DIST);
-fs.copyFileSync(path.join(ROOT, 'extension.js'), path.join(DIST, 'extension.js'));
+for (const f of ['extension.js', 'README.md', 'CHANGELOG.md']) fs.copyFileSync(path.join(ROOT, f), path.join(DIST, f));
 
 // A few pages to fill the sidebar with. Each entry is a block, or [block, its children].
 const PAGES = {
@@ -134,7 +135,7 @@ async function main() {
   await start();
   if (!PUBLIC) {
     await loadDevExtension();
-    await waitFor('Roam to fetch the build', () => served.some((r) => r.includes('extension.js')), 20000)
+    await waitFor('Roam to fetch the build', () => served.includes('GET /ci/extension.js'), 20000)
       .catch((e) => { throw new Error(`${e.message}; requests so far: ${JSON.stringify(served)}`); });
     await sleep(2000);
   }
