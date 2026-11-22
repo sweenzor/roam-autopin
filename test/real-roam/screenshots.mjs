@@ -17,7 +17,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {
   roam, log, sleep, evalIn, serve, stopServing, launchRoam, quitRoam, waitFor, signIn, openGraph, loadDevExtension,
-  sb, clearSidebar, EXT_URL,
+  sb, clearSidebar, EXT_URL, served,
 } from './roam.mjs';
 
 const EMAIL = process.env.ROAM_EMAIL, PASSWORD = process.env.ROAM_PASSWORD;
@@ -132,7 +132,13 @@ async function main() {
   serve(DIST);
   log(`graph ${GRAPH}${PUBLIC ? ' (public, no sign-in: trying the script out only)' : ''}`);
   await start();
-  if (!PUBLIC) await loadDevExtension();
+  if (!PUBLIC) {
+    await loadDevExtension();
+    await waitFor('Roam to fetch the build', () => served.some((r) => r.includes('extension.js')), 20000)
+      .catch((e) => { throw new Error(`${e.message}; requests so far: ${JSON.stringify(served)}`); });
+    await sleep(2000);
+  }
+  log('requests for the build', JSON.stringify(served));
   await clearSidebar();
   const u = await makePages();
   await openPage('Lisbon trip');
@@ -143,7 +149,8 @@ async function main() {
       await sb.addWindow({ window: w(key) });
       await new Promise((r) => setTimeout(r, 1200));
     }`, u);
-  await waitFor('three pinned windows', async () => (await pinnedCount()) === 3, 15000);
+  await waitFor('three pinned windows', async () => (await pinnedCount()) === 3, 15000)
+    .catch(async (e) => { throw new Error(`${e.message}: ${JSON.stringify(await windows())}; requests: ${JSON.stringify(served)}`); });
   log('sidebar', JSON.stringify(await windows()));
   await snap('autopin', await windowBox());
 

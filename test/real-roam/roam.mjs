@@ -34,9 +34,12 @@ function roamPids() {
 
 // ---------- extension server (Roam Depot developer extension from URL) ----------
 let server = null;
+/** Every request Roam made for the build, for the log. */
+export const served = [];
 export function serve(dir) {
   const root = path.resolve(dir);
   server = http.createServer((q, s) => {
+    served.push(`${q.method} ${q.url}`);
     const h = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Private-Network': 'true', 'Access-Control-Allow-Headers': '*', 'Cache-Control': 'no-store' };
     if (q.method === 'OPTIONS') { s.writeHead(204, h); return s.end(); }
     const rel = decodeURIComponent(q.url.split('?')[0]).replace(/^\/ci\//, '');
@@ -68,7 +71,7 @@ export async function launchRoam() {
     if (!roam.page) await sleep(1000);
   }
   if (!roam.page) throw new Error('Roam window not found over CDP');
-  roam.page.on('console', (m) => { if (m.type() === 'error' && /sidebar|pinWindow/i.test(m.text())) log('[page]', m.text().slice(0, 300)); });
+  roam.page.on('console', (m) => { if (m.type() === 'error' && /sidebar|pinWindow|extension/i.test(m.text())) log('[page]', m.text().slice(0, 300)); });
   roam.page.on('crash', () => log('[crash] Roam\'s window crashed'));
   await roam.page.setViewportSize?.({ width: 1200, height: 773 }).catch(() => {});
 }
