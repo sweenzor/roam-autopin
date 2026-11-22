@@ -67,7 +67,7 @@ picture is Roam after it was quit and opened again, with the sidebar opened.
 
 ## Changes
 
-See the [changelog](CHANGELOG.md).
+See the [changelog](https://github.com/sweenzor/roam-autopin/blob/main/CHANGELOG.md).
 
 ## Development
 
@@ -89,4 +89,4 @@ by [Mark Lavercombe](https://github.com/mlava).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/sweenzor/roam-autopin/blob/main/LICENSE)

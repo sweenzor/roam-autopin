@@ -201,7 +201,3 @@ export async function clearSidebar() {
   await sb(`for (const x of sb.getWindows()) { const k = x.type + ':' + (x['search-query-str'] ?? x['block-uid'] ?? x['page-uid'] ?? x['mentions-uid']);
     if (x['pinned?']) await sb.unpinWindow({ window: w(k) }); await sb.removeWindow({ window: w(k) }); }`);
 }
-export const deletePage = (title) => evalIn(async (title) => {
-  const uid = window.roamAlphaAPI.data.q('[:find ?u . :in $ ?t :where [?p :node/title ?t] [?p :block/uid ?u]]', title);
-  if (uid) await window.roamAlphaAPI.data.page.delete({ page: { uid } });
-}, title);

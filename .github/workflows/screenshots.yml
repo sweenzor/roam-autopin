@@ -57,7 +57,7 @@ jobs:
       - name: Build the extension
         if: steps.creds.outputs.ok == 'true'
         run: |
-          npm install --no-audit --no-fund
+          npm ci --no-audit --no-fund
           npm run build
 
       - name: Cache the Roam installer

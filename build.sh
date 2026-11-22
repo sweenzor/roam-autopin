@@ -1,2 +1,2 @@
-npm install
+npm ci --no-audit --no-fund
 npm run build
