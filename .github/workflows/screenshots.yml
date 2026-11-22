@@ -6,16 +6,10 @@
 # ROAM_PASSWORD repository secrets (the Roam test account).
 name: Screenshots
 
-# By hand (Actions -> Screenshots -> Run workflow, on the release branch), and on a pull request that
-# changes the extension, the README or the script. A push by the workflow starts no run of its own.
+# Run by hand only: Actions -> Screenshots -> Run workflow, on the release branch. A push by the workflow
+# gets no checks of its own, so make the pictures before the last commit of a release, not after it.
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'src/**'
-      - 'README.md'
-      - 'test/real-roam/**'
-      - '.github/workflows/screenshots.yml'
 
 # Pushes the pictures back to the branch.
 permissions:

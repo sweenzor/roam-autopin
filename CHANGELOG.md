@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 (unreleased)
+## 1.1.0 (2026-11-22)
 
 - Search windows are pinned too. Before, only pages, blocks, references and graph views were.
 - References to a block are pinned.

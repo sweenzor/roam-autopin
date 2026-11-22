@@ -52,10 +52,11 @@ sidebar API and calls Roam's own `pinWindow` on it. The result is the same as cl
 
 ## The sidebar comes back after a restart
 
-![Roam just after a restart, with the same three pinned windows in the right sidebar](https://raw.githubusercontent.com/sweenzor/roam-autopin/275463766d3a92c736c531c417362ef82e2b104e/docs/images/after-restart.png)
+![Roam after a restart, with the same three pinned windows in the right sidebar](https://raw.githubusercontent.com/sweenzor/roam-autopin/275463766d3a92c736c531c417362ef82e2b104e/docs/images/after-restart.png)
 
 Roam itself keeps pinned windows. Since Autopin pins everything, the sidebar you left is there the next
-time you open the graph. The picture is Roam just after it was quit and opened again.
+time you open the graph. Roam starts with the sidebar closed: open it and your windows are in it. The
+picture is Roam after it was quit and opened again, with the sidebar opened.
 
 ## Limitations
 
@@ -78,7 +79,7 @@ npm run build    # webpack bundles src/index.js -> extension.js
 Load the folder as a developer extension in **Settings → Roam Depot**.
 
 The pictures on this page are taken in Roam's desktop app by `test/real-roam/screenshots.mjs`. The
-**Screenshots** workflow runs it, commits the pictures to `docs/images` and points this page at them. Run
+**Screenshots** workflow (run by hand from the Actions tab) runs it, commits the pictures to `docs/images` and points this page at them. Run
 it before each release to Roam Depot.
 
 ## Credits
