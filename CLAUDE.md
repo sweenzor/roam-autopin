@@ -11,6 +11,14 @@ npm install
 npm run build    # webpack bundles src/index.js -> extension.js (ES module)
 ```
 
+## README screenshots
+
+`test/real-roam/screenshots.mjs` takes the README's pictures in Roam's real desktop app (Linux, Xvfb),
+signed in to the test graph. The Screenshots workflow runs it (needs the `ROAM_EMAIL` and `ROAM_PASSWORD`
+repository secrets), commits the pictures to `docs/images` and pins the README's image links to that
+commit. Run it before every release to Roam Depot. Every feature has a README section and a picture.
+Without credentials the script uses the public help graph, to try the script out only.
+
 ## Architecture
 
 - `src/index.js` — Extension entry point. Exports `onload`/`onunload` lifecycle hooks expected by Roam's extension system.

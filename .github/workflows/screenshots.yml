@@ -2,14 +2,20 @@
 # hosted test graph, commits them to docs/images on the branch it ran for, and points the README's image
 # links at that commit (Roam Depot shows the README, and needs links pinned to a commit). Run it before
 # every release to Roam Depot, so the pictures show the build being released: Actions -> Screenshots ->
-# Run workflow, on the release branch. See test/real-roam/screenshots.mjs. Needs the same ROAM_EMAIL and
-# ROAM_PASSWORD secrets as Real Roam.
+# Run workflow, on the release branch. See test/real-roam/screenshots.mjs. Needs the ROAM_EMAIL and
+# ROAM_PASSWORD repository secrets (the Roam test account).
 name: Screenshots
 
-# Run by hand only. A push by the workflow gets no checks of its own, so make the pictures before the last
-# commit of a release, not after it.
+# By hand (Actions -> Screenshots -> Run workflow, on the release branch), and on a pull request that
+# changes the extension, the README or the script. A push by the workflow starts no run of its own.
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'README.md'
+      - 'test/real-roam/**'
+      - '.github/workflows/screenshots.yml'
 
 # Pushes the pictures back to the branch.
 permissions:
@@ -28,7 +34,7 @@ jobs:
       ROAM_VERSION: 0.0.42
       ROAM_DEB_SHA512: x9Ln56V7TlDO6zDcXK0AKDeAmz5LSX1oWpKbV6w7CUzbMc/LESJ7qLQs0Ap/nPpwPCf7jUypd0LS05SsJbD/HA==
       OUT: ${{ github.workspace }}/docs/images
-      BRANCH: ${{ github.ref_name }}
+      BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - name: Check for the Roam test account secrets
         id: creds
@@ -46,7 +52,7 @@ jobs:
       - uses: actions/checkout@v4
         if: steps.creds.outputs.ok == 'true'
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - uses: actions/setup-node@v4
         if: steps.creds.outputs.ok == 'true'
