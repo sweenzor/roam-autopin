@@ -19,6 +19,7 @@ import {
   roam, log, sleep, evalIn, serve, stopServing, launchRoam, quitRoam, waitFor, signIn, openGraph, loadDevExtension,
   sb, clearSidebar, EXT_URL, served,
 } from './roam.mjs';
+import { checkPlan } from './plan.mjs';
 
 const EMAIL = process.env.ROAM_EMAIL, PASSWORD = process.env.ROAM_PASSWORD;
 delete process.env.ROAM_EMAIL; delete process.env.ROAM_PASSWORD;
@@ -90,10 +91,15 @@ const windows = () => evalIn(() => window.roamAlphaAPI.ui.rightSidebar.getWindow
 const pinnedCount = async () => (await windows()).filter((x) => x.endsWith(' pinned')).length;
 
 let cdp = null;
+let planCheck = null;
 /** Starts Roam and opens the graph at twice the pixel density, so the pictures are sharp. */
 async function start() {
   await launchRoam();
   if (!PUBLIC) await signIn(EMAIL, PASSWORD);
+  if (!PUBLIC && !planCheck) { // once a run
+    planCheck = await checkPlan(roam.page, new URL('../test-account-plan.test.js', import.meta.url), GRAPH.startsWith('offline/') ? `#/${GRAPH}` : `#/app/${GRAPH}`);
+    log(planCheck.ok ? 'PASS' : 'FAIL', "The test account's plan is Believer, ends more than a year away, on the date the unit test pins", planCheck.detail);
+  }
   await openGraph(GRAPH);
   if (PUBLIC) await evalIn(async (url) => { const m = await import(`${url}extension.js?${Date.now()}`); m.default.onload({ extensionAPI: {} }); window.__autopin = m.default; }, EXT_URL);
   cdp = await roam.page.context().newCDPSession(roam.page); // kept open: the override ends with it
@@ -198,5 +204,6 @@ try { await main(); } catch (e) { failure = e.message.split('\n')[0]; log('ERROR
 try { if (roam.page) { await clearSidebar(); await sleep(1500); } } catch { /* best effort */ }
 await quitRoam('SIGTERM').catch(() => {});
 stopServing();
+if (planCheck && !planCheck.ok && !failure) failure = `the test account's plan: ${planCheck.detail}`;
 log(failure ? `FAILED: ${failure}` : 'DONE', '->', OUT);
 process.exit(failure ? 1 : 0);
