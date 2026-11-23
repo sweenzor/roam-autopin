@@ -97,8 +97,8 @@ async function start() {
   await launchRoam();
   if (!PUBLIC) await signIn(EMAIL, PASSWORD);
   if (!PUBLIC && !planCheck) { // once a run
-    planCheck = await checkPlan(roam.page, new URL('../test-account-plan.test.js', import.meta.url), GRAPH.startsWith('offline/') ? `#/${GRAPH}` : `#/app/${GRAPH}`);
-    log(planCheck.ok ? 'PASS' : 'FAIL', "The test account's plan is Believer, ends more than a year away, on the date the unit test pins", planCheck.detail);
+    planCheck = await checkPlan(roam.page, GRAPH.startsWith('offline/') ? `#/${GRAPH}` : `#/app/${GRAPH}`);
+    log(planCheck.ok ? 'PASS' : 'FAIL', "The test account's plan is Believer and ends more than a year away", planCheck.detail);
   }
   await openGraph(GRAPH);
   if (PUBLIC) await evalIn(async (url) => { const m = await import(`${url}extension.js?${Date.now()}`); m.default.onload({ extensionAPI: {} }); window.__autopin = m.default; }, EXT_URL);
