@@ -36,3 +36,7 @@ Without credentials the script uses the public help graph, to try the script out
 - `window.roamAlphaAPI.ui.rightSidebar.getWindows()` — Lists current sidebar windows with order, type, and uid.
 - `window.roamAlphaAPI.ui.rightSidebar.pinWindow({ window: { type, "block-uid" } })` — Pins a sidebar window. `getWindows` reports `block-uid`, `page-uid` or `mentions-uid` depending on the kind; all are pinned with `block-uid`. A search is pinned with `search-query-str`.
 
+
+## Test account plan
+
+Real-Roam CI signs in to a Roam test account with a Believer plan that ends on 2031-11-23 (without a plan its local graphs are read-only). `test/test-account-plan.test.js` fails from a year before that; after renewing, put the new end date there.
